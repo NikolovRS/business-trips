@@ -24,10 +24,10 @@
                 <label class="block text-sm font-bold mb-1">Име на шофьор</label>
                 <select id="driverName" class="w-full border rounded-lg p-2 bg-white" required>
                     <option value="">Изберете шофьор</option>
-                    <option value="Шофьор 1">Шофьор 1</option>
-                    <option value="Шофьор 2">Шофьор 2</option>
-                    <option value="Шофьор 3">Шофьор 3</option>
-                    <option value="Шофьор 4">Шофьор 4</option>
+                    <option value="Иво">Иво</option>
+                    <option value="Краси">Краси</option>
+                    <option value="Румен">Румен</option>
+                    <option value="Иван">Иван</option>
                 </select>
             </div>
 
@@ -68,10 +68,10 @@
             <div class="w-full sm:w-auto flex flex-wrap gap-2">
                 <select id="filterDriver" class="border rounded-lg p-2 text-sm bg-white">
                     <option value="">Всички шофьори</option>
-                    <option value="Шофьор 1">Шофьор 1</option>
-                    <option value="Шофьор 2">Шофьор 2</option>
-                    <option value="Шофьор 3">Шофьор 3</option>
-                    <option value="Шофьор 4">Шофьор 4</option>
+                    <option value="Иво">Иво</option>
+                    <option value="Краси">Краси</option>
+                    <option value="Румен">Румен</option>
+                    <option value="Иван">Иван</option>
                 </select>
 
                 <input type="month" id="filterMonth" class="border rounded-lg p-2 text-sm bg-white">
@@ -114,7 +114,7 @@
             appId: "1:430743635179:web:c0d3790c88e646b6b9eaae"
         };
 
-        const CORRECT_PASSWORD = "1234";
+        const CORRECT_PASSWORD = "0277";
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -226,7 +226,7 @@
             const selectedMonth = filterMonth.value;
             const formattedMonth = formatMonthName(selectedMonth);
             
-            let driverMonthlyTotals = { "Шофьор 1": 0, "Шофьор 2": 0, "Шофьор 3": 0, "Шофьор 4": 0 };
+            let driverMonthlyTotals = { "Иво": 0, "Краси": 0, "Румен": 0, "Иван": 0 };
             
             expenses.forEach(item => {
                 if (!item.date) return;
@@ -254,19 +254,19 @@
                     <div class="text-xs text-gray-500 font-medium mb-2">Общо за ${formattedMonth} по шофьори:</div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Шофьор 1</div>
+                            <div class="text-xs text-indigo-500 font-medium">Иво</div>
                             <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 1"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Шофьор 2</div>
+                            <div class="text-xs text-indigo-500 font-medium">Краси</div>
                             <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 2"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Шофьор 3</div>
+                            <div class="text-xs text-indigo-500 font-medium">Румен</div>
                             <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 3"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Шофьор 4</div>
+                            <div class="text-xs text-indigo-500 font-medium">Иван</div>
                             <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 4"].toFixed(2)} лв.</div>
                         </div>
                     </div>
