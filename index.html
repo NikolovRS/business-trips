@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Командировки и Разходи (Firebase)</title>
+    <title>Командировки и Разходи (Realtime DB)</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans p-4 sm:p-6">
@@ -12,7 +12,7 @@
         <header class="mb-6 border-b pb-4">
             <h1 class="text-2xl font-bold text-indigo-600 mb-4">🚗 Командировки и Разходи</h1>
             
-            <!-- Динамичен панел за суми (променя се според избрания шофьор) -->
+            <!-- Динамичен панел за суми -->
             <div id="summaryContainer">
                 <!-- Тук се зареждат данните динамично -->
             </div>
@@ -24,10 +24,10 @@
                 <label class="block text-sm font-medium mb-1">Име на шофьор</label>
                 <select id="driverName" class="w-full border rounded-lg p-2 bg-white" required>
                     <option value="">Изберете шофьор</option>
-                    <option value="Иво">Иво</option>
-                    <option value="Краси">Краси</option>
-                    <option value="Румен">Румен</option>
-                    <option value="Иван">Иван</option>
+                    <option value="Шофьор 1">Шофьор 1</option>
+                    <option value="Шофьор 2">Шофьор 2</option>
+                    <option value="Шофьор 3">Шофьор 3</option>
+                    <option value="Шофьор 4">Шофьор 4</option>
                 </select>
             </div>
 
@@ -47,7 +47,7 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Сума (€)</label>
+                <label class="block text-sm font-medium mb-1">Сума (лв.)</label>
                 <input type="number" step="0.01" id="amount" placeholder="0.00" class="w-full border rounded-lg p-2 bg-white">
             </div>
 
@@ -68,10 +68,10 @@
             <div class="w-full sm:w-auto flex flex-wrap gap-2">
                 <select id="filterDriver" class="border rounded-lg p-2 text-sm bg-white">
                     <option value="">Всички шофьори</option>
-                    <option value="Иво">Иво</option>
-                    <option value="Краси">Краси</option>
-                    <option value="Румен">Румен</option>
-                    <option value="Иван">Иван</option>
+                    <option value="Шофьор 1">Шофьор 1</option>
+                    <option value="Шофьор 2">Шофьор 2</option>
+                    <option value="Шофьор 3">Шофьор 3</option>
+                    <option value="Шофьор 4">Шофьор 4</option>
                 </select>
 
                 <input type="month" id="filterMonth" class="border rounded-lg p-2 text-sm bg-white">
@@ -98,25 +98,26 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Modular) -->
+    <!-- Firebase SDK (Realtime Database) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ПОСТАВЕТЕ ВАШИТЕ НАСТРОЙКИ ОТ FIREBASE КОНЗОЛАТА ТУК:
+        // ПОСТАВЕТЕ ВАШИТЕ НАСТРОЙКИ ОТ FIREBASE КОНЗОЛАТА ТУК (Уверете се, че има и databaseURL):
         const firebaseConfig = {
             apiKey: "AIzaSyDUtXr67pU53x0B0ZVyky1q9Nysx0UAKoo",
             authDomain: "business-trips-b195c.firebaseapp.com",
+            databaseURL: "https://business-trips-b195c-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "business-trips-b195c",
             storageBucket: "business-trips-b195c.firebasestorage.app",
             messagingSenderId: "430743635179",
             appId: "1:430743635179:web:c0d3790c88e646b6b9eaae"
         };
 
-        const CORRECT_PASSWORD = "0277";
+        const CORRECT_PASSWORD = "1234";
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
         document.getElementById('expenseDate').valueAsDate = new Date();
         
@@ -143,12 +144,16 @@
             return `${monthName} ${y}`;
         }
 
-        const q = query(collection(db, "expenses"), orderBy("date", "desc"));
-        onSnapshot(q, (snapshot) => {
+        // Четене на данни в реално време от Realtime Database
+        const expensesRef = ref(db, 'expenses');
+        onValue(expensesRef, (snapshot) => {
             expenses = [];
-            snapshot.forEach((doc) => {
-                expenses.push({ id: doc.id, ...doc.data() });
-            });
+            const data = snapshot.val();
+            if (data) {
+                Object.keys(data).forEach((key) => {
+                    expenses.push({ id: key, ...data[key] });
+                });
+            }
             loadingOverlay.classList.add('hidden');
             renderTable();
         }, (error) => {
@@ -156,6 +161,7 @@
             loadingOverlay.textContent = "Грешка при зареждане на данните.";
         });
 
+        // Добавяне на запис
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -181,7 +187,7 @@
             submitBtn.textContent = "Записване...";
 
             try {
-                await addDoc(collection(db, "expenses"), newExpense);
+                await push(expensesRef, newExpense);
                 form.reset();
                 document.getElementById('expenseDate').valueAsDate = new Date();
                 document.getElementById('driverPassword').value = "";
@@ -212,7 +218,6 @@
                 }
             });
 
-            // Динамично обновяване на горния панел
             if (selectedDriver) {
                 const totalForDriver = driverMonthlyTotals[selectedDriver] || 0;
                 summaryContainer.innerHTML = `
@@ -231,20 +236,20 @@
                     <div class="text-xs text-gray-500 font-medium mb-2">Общо за ${formattedMonth} по шофьори:</div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Иво</div>
-                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Иво"].toFixed(2)} €</div>
+                            <div class="text-xs text-indigo-500 font-medium">Шофьор 1</div>
+                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 1"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Краси</div>
-                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Краси"].toFixed(2)} €</div>
+                            <div class="text-xs text-indigo-500 font-medium">Шофьор 2</div>
+                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 2"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Румен</div>
-                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Румен"].toFixed(2)} €</div>
+                            <div class="text-xs text-indigo-500 font-medium">Шофьор 3</div>
+                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 3"].toFixed(2)} лв.</div>
                         </div>
                         <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                            <div class="text-xs text-indigo-500 font-medium">Иван</div>
-                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Иван"].toFixed(2)} €</div>
+                            <div class="text-xs text-indigo-500 font-medium">Шофьор 4</div>
+                            <div class="text-lg font-bold text-indigo-700">${driverMonthlyTotals["Шофьор 4"].toFixed(2)} лв.</div>
                         </div>
                     </div>
                 `;
@@ -256,6 +261,9 @@
                 let matchMonth = selectedMonth ? item.date.startsWith(selectedMonth) : true;
                 return matchDriver && matchMonth;
             });
+
+            // Сортиране по дата (най-новите отгоре)
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if (filtered.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Няма въведени записи за този период.</td></tr>`;
