@@ -21,7 +21,7 @@
         <!-- Форма за въвеждане -->
         <form id="expenseForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 bg-gray-50 p-4 rounded-xl border">
             <div>
-                <label class="block text-sm font-medium mb-1">Име на шофьор</label>
+                <label class="block text-sm font-bold mb-1">Име на шофьор</label>
                 <select id="driverName" class="w-full border rounded-lg p-2 bg-white" required>
                     <option value="">Изберете шофьор</option>
                     <option value="Шофьор 1">Шофьор 1</option>
@@ -32,27 +32,27 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Дата</label>
+                <label class="block text-sm font-bold mb-1">Дата</label>
                 <input type="date" id="expenseDate" class="w-full border rounded-lg p-2 bg-white" required>
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Дестинация / Град</label>
+                <label class="block text-sm font-bold mb-1">Дестинация / Град</label>
                 <input type="text" id="destination" placeholder="напр. Варна" class="w-full border rounded-lg p-2 bg-white" required>
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Наименование на разхода</label>
+                <label class="block text-sm font-bold mb-1">Наименование на разхода</label>
                 <input type="text" id="expenseName" placeholder="напр. Хотел, Вечеря, Гориво..." class="w-full border rounded-lg p-2 bg-white">
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Сума (лв.)</label>
+                <label class="block text-sm font-bold mb-1">Сума (лв.)</label>
                 <input type="number" step="0.01" id="amount" placeholder="0.00" class="w-full border rounded-lg p-2 bg-white">
             </div>
 
             <div>
-                <label class="block text-sm font-medium mb-1">Парола за запис</label>
+                <label class="block text-sm font-bold mb-1">Парола за запис</label>
                 <input type="password" id="driverPassword" placeholder="Въведете парола" class="w-full border rounded-lg p-2 bg-white" required>
             </div>
 
@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Realtime Database с включен remove) -->
+    <!-- Firebase SDK (Realtime Database) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -160,7 +160,6 @@
             loadingOverlay.textContent = "Грешка при зареждане на данните.";
         });
 
-        // Добавяне на запис
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -198,7 +197,6 @@
             }
         });
 
-        // Изтриване на запис
         tableBody.addEventListener('click', async function(e) {
             if (e.target && e.target.classList.contains('delete-btn')) {
                 const idToDelete = e.target.getAttribute('data-id');
