@@ -89,6 +89,7 @@
                         <th class="p-3">Дестинация</th>
                         <th class="p-3">Наименование</th>
                         <th class="p-3 text-right">Сума</th>
+                        <th class="p-3 text-center">Действие</th>
                     </tr>
                 </thead>
                 <tbody id="expenseTableBody" class="divide-y text-sm">
@@ -98,20 +99,19 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Realtime Database) -->
+    <!-- Firebase SDK (Realtime Database с включен remove) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // ПОСТАВЕТЕ ВАШИТЕ НАСТРОЙКИ ОТ FIREBASE КОНЗОЛАТА ТУК (Уверете се, че има и databaseURL):
         const firebaseConfig = {
-            apiKey: "AIzaSyDUtXr67pU53x0B0ZVyky1q9Nysx0UAKoo",
-            authDomain: "business-trips-b195c.firebaseapp.com",
-            databaseURL: "https://business-trips-b195c-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "business-trips-b195c",
-            storageBucket: "business-trips-b195c.firebasestorage.app",
-            messagingSenderId: "430743635179",
-            appId: "1:430743635179:web:c0d3790c88e646b6b9eaae"
+            apiKey: "AIzaSy...",
+            authDomain: "your-project.firebaseapp.com",
+            databaseURL: "https://your-project-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "your-project",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "...",
+            appId: "..."
         };
 
         const CORRECT_PASSWORD = "1234";
@@ -144,7 +144,6 @@
             return `${monthName} ${y}`;
         }
 
-        // Четене на данни в реално време от Realtime Database
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
             expenses = [];
@@ -196,6 +195,27 @@
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Добави запис";
+            }
+        });
+
+        // Изтриване на запис
+        tableBody.addEventListener('click', async function(e) {
+            if (e.target && e.target.classList.contains('delete-btn')) {
+                const idToDelete = e.target.getAttribute('data-id');
+                const passwordInput = document.getElementById('driverPassword').value;
+                
+                if (passwordInput !== CORRECT_PASSWORD) {
+                    alert("Моля, въведете коректната парола в полето 'Парола за запис' най-горе, за да изтриете запис!");
+                    return;
+                }
+
+                if (confirm("Сигурни ли сте, че искате да изтриете този запис?")) {
+                    try {
+                        await remove(ref(db, 'expenses/' + idToDelete));
+                    } catch (error) {
+                        alert("Грешка при изтриване: " + error.message);
+                    }
+                }
             }
         });
 
@@ -262,11 +282,10 @@
                 return matchDriver && matchMonth;
             });
 
-            // Сортиране по дата (най-новите отгоре)
             filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if (filtered.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Няма въведени записи за този период.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Няма въведени записи за този период.</td></tr>`;
                 return;
             }
 
@@ -280,6 +299,11 @@
                     <td class="p-3">${item.destination}</td>
                     <td class="p-3">${item.expenseName || '-'}</td>
                     <td class="p-3 text-right font-semibold">${itemAmount.toFixed(2)} лв.</td>
+                    <td class="p-3 text-center">
+                        <button data-id="${item.id}" class="delete-btn text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded text-xs border border-red-200 hover:border-red-400 bg-red-50 transition">
+                            Изтрий
+                        </button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
