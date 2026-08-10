@@ -143,15 +143,7 @@
             const monthName = months[parseInt(m, 10) - 1] || m;
             return `${monthName} ${y}`;
         }
-// Директно преобразуване от YYYY-MM-DD към DD.MM.YYYY
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const parts = String(dateStr).split('-');
-            if (parts.length === 3) {
-                return `${parts[2]}.${parts[1]}.${parts[0]}`;
-            }
-            return dateStr;
-        }
+
       
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
@@ -305,7 +297,7 @@
                 row.className = "hover:bg-gray-50";
                 row.innerHTML = `
                    
-                   <td class="p-3">${formatDate(item.date)}</td>
+                    <td class="p-3">${item.date}</td>
                     <td class="p-3 font-medium">${item.driver}</td>
                     <td class="p-3">${item.destination}</td>
                     <td class="p-3">${item.expenseName || '-'}</td>
