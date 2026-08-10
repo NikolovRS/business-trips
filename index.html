@@ -290,6 +290,10 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
+                // Проверка за "почивка" и задаване на зелен цвят директно чрез inline стил
+                const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
+                const destStyle = isVacation ? 'style="color: #16a34a; font-weight: bold;"' : '';
+                
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
                 row.innerHTML = `
