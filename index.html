@@ -297,6 +297,11 @@
 
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
+
+                // Проверка дали дестинацията е "почивка" (без значение главни/малки букви)
+                const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
+                const destClass = isVacation ? "p-3 text-green-600 font-semibold" : "p-3";
+                
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
                 row.innerHTML = `
