@@ -143,34 +143,7 @@
             const monthName = months[parseInt(m, 10) - 1] || m;
             return `${monthName} ${y}`;
         }
-// Абсолютно сигурна функция за формат ДД.ММ.ГГГГ
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            try {
-                const str = String(dateStr).trim();
-                const parts = str.split(/[-/.]/);
-                if (parts.length === 3) {
-                    // Ако е YYYY-MM-DD
-                    if (parts[0].length === 4) {
-                        return `${parts[2]}.${parts[1]}.${parts[0]}`;
-                    }
-                    // Ако е DD-MM-YYYY
-                    if (parts[2].length === 4) {
-                        return `${parts[0]}.${parts[1]}.${parts[2]}`;
-                    }
-                }
-                const d = new Date(str);
-                if (!isNaN(d.getTime())) {
-                    const day = String(d.getDate()).padStart(2, '0');
-                    const month = String(d.getMonth() + 1).padStart(2, '0');
-                    const year = d.getFullYear();
-                    return `${day}.${month}.${year}`;
-                }
-                return str;
-            } catch (e) {
-                return dateStr;
-            }
-        }
+
       
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
