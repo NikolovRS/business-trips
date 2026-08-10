@@ -143,7 +143,40 @@
             const monthName = months[parseInt(m, 10) - 1] || m;
             return `${monthName} ${y}`;
         }
-        
+
+        // Надеждна функция за форматиране на дата към ДД.ММ.ГГГГ
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            
+            // Ако вече е в формат DD.MM.YYYY
+            if (typeof dateStr === 'string' && /^\d{2}\.\d{2}\.\d{4}$/.test(dateStr)) {
+                return dateStr;
+            }
+
+            // Разделяне по стандартни разделители (- или / или .)
+            const parts = dateStr.toString().split(/[-/.]/);
+            if (parts.length === 3) {
+                // Ако е във формат YYYY-MM-DD
+                if (parts[0].length === 4) {
+                    return `${parts[2]}.${parts[1]}.${parts[0]}`;
+                }
+                // Ако е във формат DD-MM-YYYY
+                if (parts[2].length === 4) {
+                    return `${parts[0]}.${parts[1]}.${parts[2]}`;
+                }
+            }
+
+            // Резервен вариант през Date обект
+            const d = new Date(dateStr);
+            if (!isNaN(d.getTime())) {
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const year = d.getFullYear();
+                return `${day}.${month}.${year}`;
+            }
+
+            return dateStr;
+        }
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
             expenses = [];
@@ -290,9 +323,7 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
-                // Проверка за "почивка" и задаване на зелен цвят директно чрез inline стил
-                const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
-                const destStyle = isVacation ? 'style="color: #16a34a; font-weight: bold;"' : '';
+              
                 
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
