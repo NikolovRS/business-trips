@@ -299,7 +299,9 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
-            
+            // Проверка за почивка и прилагане на стилове
+                const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
+                const cellStyle = isVacation ? 'style="color: #16a34a; font-weight: bold;"' : '';
                 
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
@@ -307,7 +309,7 @@
                    
                     <td class="p-3">${formatDate(item.date)}</td>
                     <td class="p-3 font-medium">${item.driver}</td>
-                    <td class="p-3">${item.destination}</td>
+                    <td class="p-3" ${cellStyle}>${item.destination}</td>
                     <td class="p-3">${item.expenseName || '-'}</td>
                     <td class="p-3 text-right font-semibold">${itemAmount.toFixed(2)} €</td>
                     <td class="p-3 text-center">
