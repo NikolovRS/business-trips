@@ -143,7 +143,15 @@
             const monthName = months[parseInt(m, 10) - 1] || m;
             return `${monthName} ${y}`;
         }
-
+// Директно преобразуване от YYYY-MM-DD към DD.MM.YYYY
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = String(dateStr).split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}.${parts[1]}.${parts[0]}`;
+            }
+            return dateStr;
+        }
       
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
@@ -291,9 +299,7 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
-             // Проверка за почивка и прилагане на стилове
-                const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
-                const cellStyle = isVacation ? 'style="color: #16a34a; font-weight: bold;"' : '';
+            
                 
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
