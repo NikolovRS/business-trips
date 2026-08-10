@@ -144,6 +144,14 @@
             return `${monthName} ${y}`;
         }
 
+        // Форматиране на дата от YYYY-MM-DD към DD.MM.YYYY
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+
         const expensesRef = ref(db, 'expenses');
         onValue(expensesRef, (snapshot) => {
             expenses = [];
