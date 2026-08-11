@@ -299,9 +299,11 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
-            // Проверка за почивка и прилагане на стилове
+             // Проверка за почивка (зелено) спрямо останалите (тъмно червено)
                 const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
-                const cellStyle = isVacation ? 'style="color: #16a34a; font-weight: bold;"' : '';
+                const cellStyle = isVacation 
+                    ? 'style="color: #16a34a; font-weight: bold;"' 
+                    : 'style="color: #b91c1c; font-weight: bold;"';
                 
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
