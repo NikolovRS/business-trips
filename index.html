@@ -99,10 +99,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Realtime Database) -->
+    <!-- Firebase SDK (Realtime Database & Auth) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUtXr67pU53x0B0ZVyky1q9Nysx0UAKoo",
@@ -118,6 +119,12 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // Анонимен вход във Firebase за удовлетворяване на изискванията за сигурност
+        signInAnonymously(auth).catch((error) => {
+            console.error("Грешка при анонимен вход:", error);
+        });
 
         document.getElementById('expenseDate').valueAsDate = new Date();
         
@@ -159,7 +166,6 @@
             const data = snapshot.val();
             if (data) {
                 Object.keys(data).forEach((key) => {
-                    // Игнориране на изтритите записи
                     if (!data[key].deleted) {
                         expenses.push({ id: key, ...data[key] });
                     }
@@ -191,7 +197,7 @@
                 expenseName: rawName !== "" ? rawName : "-",
                 amount: !isNaN(rawAmount) ? rawAmount : 0,
                 createdAt: Date.now(),
-                appPassword: passwordInput // Предава се за проверка от Firebase Rules
+                appPassword: passwordInput
             };
 
             submitBtn.disabled = true;
@@ -222,7 +228,6 @@
 
                 if (confirm("Сигурни ли сте, че искате да изтриете този запис?")) {
                     try {
-                        // Изпращане на заявка с парола за валидиране от Firebase Rules
                         await set(ref(db, 'expenses/' + idToDelete), {
                             deleted: true,
                             appPassword: passwordInput
