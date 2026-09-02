@@ -102,7 +102,7 @@
     <!-- Firebase SDK (Realtime Database) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUtXr67pU53x0B0ZVyky1q9Nysx0UAKoo",
@@ -143,7 +143,7 @@
             const monthName = months[parseInt(m, 10) - 1] || m;
             return `${monthName} ${y}`;
         }
-// Директно преобразуване от YYYY-MM-DD към DD.MM.YYYY
+
         function formatDate(dateStr) {
             if (!dateStr) return '';
             const parts = String(dateStr).split('-');
@@ -159,7 +159,10 @@
             const data = snapshot.val();
             if (data) {
                 Object.keys(data).forEach((key) => {
-                    expenses.push({ id: key, ...data[key] });
+                    // Игнориране на изтритите записи
+                    if (!data[key].deleted) {
+                        expenses.push({ id: key, ...data[key] });
+                    }
                 });
             }
             loadingOverlay.classList.add('hidden');
@@ -187,7 +190,8 @@
                 destination: document.getElementById('destination').value,
                 expenseName: rawName !== "" ? rawName : "-",
                 amount: !isNaN(rawAmount) ? rawAmount : 0,
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                appPassword: passwordInput // Предава се за проверка от Firebase Rules
             };
 
             submitBtn.disabled = true;
@@ -218,7 +222,11 @@
 
                 if (confirm("Сигурни ли сте, че искате да изтриете този запис?")) {
                     try {
-                        await remove(ref(db, 'expenses/' + idToDelete));
+                        // Изпращане на заявка с парола за валидиране от Firebase Rules
+                        await set(ref(db, 'expenses/' + idToDelete), {
+                            deleted: true,
+                            appPassword: passwordInput
+                        });
                     } catch (error) {
                         alert("Грешка при изтриване: " + error.message);
                     }
@@ -299,7 +307,6 @@
             filtered.forEach(item => {
                 const itemAmount = Number(item.amount) || 0;
                 
-             // Проверка за почивка (зелено) спрямо останалите (тъмно червено)
                 const isVacation = item.destination && item.destination.trim().toLowerCase() === 'почивка';
                 const cellStyle = isVacation 
                     ? 'style="color: #16a34a; font-weight: bold;"' 
@@ -308,7 +315,6 @@
                 const row = document.createElement('tr');
                 row.className = "hover:bg-gray-50";
                 row.innerHTML = `
-                   
                     <td class="p-3">${formatDate(item.date)}</td>
                     <td class="p-3 font-medium">${item.driver}</td>
                     <td class="p-3" ${cellStyle}>${item.destination}</td>
