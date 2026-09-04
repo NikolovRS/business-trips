@@ -229,24 +229,31 @@
      * Firebase автоматично възстановява сесията,
      * ако потребителят вече е влизал.
      */
-    onAuthStateChanged(auth, (user) => {
+     onAuthStateChanged(auth, async (user) => {
+
+    if (user && user.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2") {
+
+        loginScreen.classList.add("hidden");
+        appScreen.classList.remove("hidden");
+
+        if (!databaseListenerStarted) {
+            startDatabaseListener();
+        }
+
+    } else {
 
         if (user) {
-
-            loginScreen.classList.add("hidden");
-            appScreen.classList.remove("hidden");
-
-            if (!databaseListenerStarted) {
-                startDatabaseListener();
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Грешка при изчистване на старата сесия:", error);
             }
-
-        } else {
-
-            loginScreen.classList.remove("hidden");
-            appScreen.classList.add("hidden");
-
         }
-    });
+
+        loginScreen.classList.remove("hidden");
+        appScreen.classList.add("hidden");
+    }
+});
 
 
     /*
