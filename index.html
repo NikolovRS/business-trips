@@ -804,48 +804,45 @@
 
             row.innerHTML = `
 
-                <td class="p-3">
-                    ${formatDate(item.date)}
+    <td class="p-3">
+        ${formatDate(item.date)}
+    </td>
+
+    <td class="p-3 font-medium">
+        ${item.driver}
+    </td>
+
+    <td class="p-3" ${cellStyle}>
+        ${item.destination}
+    </td>
+
+    <td class="p-3">
+        ${item.expenseName || "-"}
+    </td>
+
+    <td class="p-3 text-right font-semibold">
+        ${itemAmount.toFixed(2)} €
+    </td>
+
+    ${
+        auth.currentUser &&
+        auth.currentUser.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2"
+            ? `
+                <td class="p-3 text-center">
+                    <button
+                        data-id="${item.id}"
+                        class="delete-btn text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded text-xs border border-red-200 hover:border-red-400 bg-red-50 transition"
+                    >
+                        Изтрий
+                    </button>
                 </td>
+            `
+            : ""
+    }
 
-                <td class="p-3 font-medium">
-                    ${item.driver}
-                </td>
+`;
 
-                <td class="p-3" ${cellStyle}>
-                    ${item.destination}
-                </td>
-
-                <td class="p-3">
-                    ${item.expenseName || "-"}
-                </td>
-
-                
-</script>                <td class="p-3 text-right font-semibold">
-                    ${itemAmount.toFixed(2)} €
-                </td>
-
-                ${
-                    auth.currentUser &&
-                    auth.currentUser.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2"
-
-                    ? `
-                        <td class="p-3 text-center">
-                            <button
-                                data-id="${item.id}"
-                                class="delete-btn text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded text-xs border border-red-200 hover:border-red-400 bg-red-50 transition"
-                            >
-                                Изтрий
-                            </button>
-                        </td>
-                    `
-
-                    : ""
-                }
-
-            `;
-
-            tableBody.appendChild(row);
+tableBody.appendChild(row);
 
         });
 
