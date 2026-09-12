@@ -247,6 +247,8 @@
 
         logoutBtn.classList.remove("hidden");
 
+        actionHeader.classList.remove("hidden");
+
         renderTable();
 
     } else {
@@ -265,6 +267,8 @@
         form.classList.add("hidden");
 
         logoutBtn.classList.add("hidden");
+
+        actionHeader.classList.add("hidden");
 
         renderTable();
     }
@@ -816,27 +820,28 @@
                     ${item.expenseName || "-"}
                 </td>
 
-                <td class="p-3 text-center">
+                
+</script>                <td class="p-3 text-right font-semibold">
+                    ${itemAmount.toFixed(2)} €
+                </td>
 
-    ${
-        auth.currentUser &&
-        auth.currentUser.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2"
+                ${
+                    auth.currentUser &&
+                    auth.currentUser.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2"
 
-        ? `
-            <button
-                data-id="${item.id}"
-                class="delete-btn text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded text-xs border border-red-200 hover:border-red-400 bg-red-50 transition"
-            >
-                Изтрий
-            </button>
-        `
+                    ? `
+                        <td class="p-3 text-center">
+                            <button
+                                data-id="${item.id}"
+                                class="delete-btn text-red-500 hover:text-red-700 font-semibold px-2 py-1 rounded text-xs border border-red-200 hover:border-red-400 bg-red-50 transition"
+                            >
+                                Изтрий
+                            </button>
+                        </td>
+                    `
 
-        : `
-            <span class="text-xs text-gray-400">Само преглед</span>
-        `
-    }
-
-</td>
+                    : ""
+                }
 
             `;
 
@@ -845,8 +850,6 @@
         });
 
     }
-
-</script>
 
 </body>
 </html>
