@@ -245,6 +245,8 @@
 
         logoutBtn.classList.remove("hidden");
 
+        renderTable();
+
     } else {
 
         // Ако има друга/стара Firebase сесия — изчистваме я
@@ -261,6 +263,8 @@
         form.classList.add("hidden");
 
         logoutBtn.classList.add("hidden");
+
+        renderTable();
     }
 });
 
