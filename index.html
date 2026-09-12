@@ -231,17 +231,23 @@
      */
      onAuthStateChanged(auth, async (user) => {
 
+    // Данните се зареждат винаги — и без вход
+    if (!databaseListenerStarted) {
+        startDatabaseListener();
+    }
+
+    // Ако е правилният акаунт — разрешаваме редакция
     if (user && user.uid === "oqhVjnT4EEZ9szD6mNgGo7c1BnF2") {
 
         loginScreen.classList.add("hidden");
-        appScreen.classList.remove("hidden");
 
-        if (!databaseListenerStarted) {
-            startDatabaseListener();
-        }
+        form.classList.remove("hidden");
+
+        logoutBtn.classList.remove("hidden");
 
     } else {
 
+        // Ако има друга/стара Firebase сесия — изчистваме я
         if (user) {
             try {
                 await signOut(auth);
@@ -251,7 +257,10 @@
         }
 
         loginScreen.classList.remove("hidden");
-        appScreen.classList.add("hidden");
+
+        form.classList.add("hidden");
+
+        logoutBtn.classList.add("hidden");
     }
 });
 
